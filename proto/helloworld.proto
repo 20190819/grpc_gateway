@@ -1,0 +1,38 @@
+syntax="proto3";
+package helloworld;
+option go_package="./proto";
+
+import "google/api/annotations.proto";
+
+// 编译命令如下
+
+// protoc -I. -I $GOPATH/pkg/mod/github.com/grpc-ecosystem/grpc-gateway@v1.16.0/third_party/googleapis  --go_out=plugins=grpc:. ./proto/helloworld.proto
+
+// protoc -I. -I $GOPATH/pkg/mod/github.com/grpc-ecosystem/grpc-gateway@v1.16.0/third_party/googleapis   --grpc-gateway_out=logtostderr=true:. ./proto/helloworld.proto
+
+message HRequest{
+    string value=1;
+}
+message HResponse{
+    string data=1;
+}
+
+message FileBinary{
+    bytes data=1;
+}
+
+service YourService{
+    rpc Echo(HRequest)returns(HResponse){
+        option(google.api.http)={
+            post:"/v1/helloworld/echo",
+            body:"*"
+        };
+    }
+
+    rpc DownloadFile(HRequest)returns(stream FileBinary){
+        option(google.api.http)={
+            post:"/v1/helloworld/getfile",
+            body:"*"
+        };
+    }
+}
